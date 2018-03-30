@@ -1,9 +1,9 @@
 //
 //  AvatarCaptureController.swift
-//  AvatarCapture
+//  Tourre
 //
 //  Created by John Murphy on 3/28/18.
-//  Copyright © 2018 Gateway Apps. All rights reserved.
+//  Copyright © 2018 Eye-Fi. All rights reserved.
 //
 
 import UIKit
@@ -16,12 +16,14 @@ protocol AvatarCaptureControllerDelegate: NSObjectProtocol {
 }
 
 class AvatarCaptureController: UIViewController {
-    var delegate: AvatarCaptureControllerDelegate?
-    var image: UIImage?
-    var previousFrame: CGRect?
-    var isCapturing: Bool?
+    @IBOutlet weak var apertureView: UIView!
     
-    var avatarView: UIImageView?
+    var delegate: AvatarCaptureControllerDelegate?
+    var presentPickerImmediately = false
+    
+    var image: UIImage?
+    var isCapturing: Bool = false
+    
     var captureView: UIView?
     var captureSession: AVCaptureSession?
     var stillImageOutput: AVCapturePhotoOutput?
@@ -30,74 +32,106 @@ class AvatarCaptureController: UIViewController {
     var isCapturingImage: Bool?
     var capturedImageView: UIImageView?
     var picker: UIImagePickerController?
-    var imageSelectedView: UIView?
     var selectedImage: UIImage?
+    var cancelButton: UIButton?
+    var selectPhotoButton: UIButton?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-        isCapturing = false
         
-        let singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(startCapture))
-        view.addGestureRecognizer(singleTapGestureRecognizer)
-        avatarView = UIImageView.init(frame: view.frame)
-        avatarView?.image = image
-        avatarView?.autoresizingMask = UIViewAutoresizing(rawValue: UIViewAutoresizing.RawValue(UInt8(UIViewAutoresizing.flexibleHeight.rawValue) | UInt8(UIViewAutoresizing.flexibleWidth.rawValue)))
-        avatarView?.contentMode = .scaleAspectFill
-        avatarView?.layer.masksToBounds = true
-        avatarView?.layer.cornerRadius = view.bounds.width / 2
-        view.addSubview(avatarView!)
+        // Do any additional setup after loading the view.
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if !isCapturing {
+            self.startCapture(presentPickerImmediately)
+        }
     }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         
-        view.frame = (view.superview?.bounds)!
-        view.layer.cornerRadius = view.bounds.width / 2
-        avatarView?.layer.cornerRadius = view.bounds.width / 2
+        apertureView.layer.cornerRadius = apertureView.bounds.width / 2
+        capturedImageView?.layer.cornerRadius = apertureView.bounds.width / 2
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    @objc func startCapture() {
-        if isCapturing! {
+    @objc func startCapture(_ withLibraryPicker: Bool = false) {
+        if isCapturing {
             return
         }
         
         isCapturing = true
-        for subView in view.subviews {
+        for subView in apertureView.subviews {
             subView.removeFromSuperview()
         }
-        previousFrame = view.convert(view.frame, to: nil)
         
-        captureView = UIView(frame: (view.window?.frame)!)
-        view.window?.addSubview(captureView!)
+        captureView = UIView()
+        captureView?.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(captureView!)
+        captureView?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+        captureView?.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
+        captureView?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+        captureView?.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
         
-        let shadeView = UIView(frame: (captureView?.frame)!)
+        let shadeView = UIView()
+        shadeView.translatesAutoresizingMaskIntoConstraints = false
         shadeView.alpha = 0.85
         shadeView.backgroundColor = UIColor.black
         captureView?.addSubview(shadeView)
+        shadeView.leadingAnchor.constraint(equalTo: captureView!.leadingAnchor, constant: 0).isActive = true
+        shadeView.topAnchor.constraint(equalTo: captureView!.topAnchor, constant: 0).isActive = true
+        shadeView.trailingAnchor.constraint(equalTo: captureView!.trailingAnchor, constant: 0).isActive = true
+        shadeView.bottomAnchor.constraint(equalTo: captureView!.bottomAnchor, constant: 0).isActive = true
         
         captureSession = AVCaptureSession()
         captureSession?.sessionPreset = .photo
         
         capturedImageView = UIImageView()
-        capturedImageView?.frame = previousFrame!
-        capturedImageView?.layer.cornerRadius = (previousFrame?.width)! / 2
+        capturedImageView?.translatesAutoresizingMaskIntoConstraints = false
         capturedImageView?.layer.masksToBounds = true
         capturedImageView?.backgroundColor = UIColor.clear
         capturedImageView?.isUserInteractionEnabled = true
         capturedImageView?.contentMode = .scaleAspectFill
+        capturedImageView?.isHidden = true
+        captureView?.addSubview(capturedImageView!)
+        capturedImageView?.leadingAnchor.constraint(equalTo: apertureView.leadingAnchor).isActive = true
+        capturedImageView?.topAnchor.constraint(equalTo: apertureView.topAnchor).isActive = true
+        capturedImageView?.trailingAnchor.constraint(equalTo: apertureView.trailingAnchor).isActive = true
+        capturedImageView?.bottomAnchor.constraint(equalTo: apertureView.bottomAnchor).isActive = true
         
         captureVideoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
         captureVideoPreviewLayer?.videoGravity = .resizeAspectFill
-        captureVideoPreviewLayer?.frame = previousFrame!
+        captureVideoPreviewLayer?.frame = apertureView.frame
         captureVideoPreviewLayer?.cornerRadius = (captureVideoPreviewLayer?.frame.width)! / 2
-        captureView?.layer.addSublayer(captureVideoPreviewLayer!)
+        
+        if !withLibraryPicker {
+            captureView?.layer.addSublayer(captureVideoPreviewLayer!)
+        }
+        else {
+            DispatchQueue.main.async {
+                self.showImagePicker()
+            }
+        }
+        
+        // shutter button
+        let shutterButton = UIButton()
+        shutterButton.translatesAutoresizingMaskIntoConstraints = false
+        shutterButton.setImage(UIImage.init(named: "take-snap.png"), for: .normal)
+        shutterButton.addTarget(self, action: #selector(capturePhoto), for: .touchUpInside)
+        shutterButton.tintColor = UIColor.blue
+        shutterButton.layer.cornerRadius = 20
+        captureView?.addSubview(shutterButton)
+        shutterButton.widthAnchor.constraint(equalToConstant: 100)
+        shutterButton.heightAnchor.constraint(equalToConstant: 100)
+        shutterButton.centerXAnchor.constraint(equalTo: captureView!.centerXAnchor, constant: 0).isActive = true
+        shutterButton.bottomAnchor.constraint(equalTo: captureView!.bottomAnchor, constant: -40).isActive = true
         
         let devices = AVCaptureDevice.devices(for: .video)
         if devices.count > 0 {
@@ -117,74 +151,58 @@ class AvatarCaptureController: UIViewController {
                 stillImageOutput = AVCapturePhotoOutput()
                 captureSession?.addOutput(stillImageOutput!)
                 
-                // shutter button
-                let shutterButton = UIButton(frame: CGRect(x:(previousFrame?.origin.x)! + ((previousFrame?.width)! / 2)-50,
-                                                           y: (view.window?.frame.height)! - 40 - 100,
-                                                           width: 100,
-                                                           height: 100))
-                shutterButton.setImage(UIImage.init(named: "take-snap.png"), for: .normal)
-                shutterButton.addTarget(self, action: #selector(capturePhoto), for: .touchUpInside)
-                shutterButton.tintColor = UIColor.blue
-                shutterButton.layer.cornerRadius = 20
-                captureView?.addSubview(shutterButton)
-                
                 // render swap camera
-                let swapCamerasButton = UIButton(frame: CGRect(x:view.frame.origin.x + 20,
-                                                              y: (view.window?.frame.height)! - 40 - 25,
-                                                              width: 47,
-                                                              height: 25))
+                let swapCamerasButton = UIButton()
+                swapCamerasButton.translatesAutoresizingMaskIntoConstraints = false
                 swapCamerasButton.setImage(UIImage.init(named: "front-camera.png"), for: .normal)
                 swapCamerasButton.addTarget(self, action: #selector(swapCameras), for: .touchUpInside)
                 captureView?.addSubview(swapCamerasButton)
+                swapCamerasButton.widthAnchor.constraint(equalToConstant: 47).isActive = true
+                swapCamerasButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
+                swapCamerasButton.centerXAnchor.constraint(equalTo: captureView!.leadingAnchor, constant: 40).isActive = true
+                swapCamerasButton.centerYAnchor.constraint(equalTo: shutterButton.centerYAnchor, constant: 0).isActive = true
+            }
+            else {
+                shutterButton.isHidden = true;
             }
         }
         
         // library picker button
-        let showImagePickerButton = UIButton(frame: CGRect(x:(view.window?.frame.width)! - 40,
-                                                          y: (view.window?.frame.height)! - 40 - 27,
-                                                          width: 27,
-                                                          height: 27))
+        let showImagePickerButton = UIButton()
+        showImagePickerButton.translatesAutoresizingMaskIntoConstraints = false
         showImagePickerButton.setImage(UIImage.init(named: "library.png"), for: .normal)
         showImagePickerButton.addTarget(self, action: #selector(showImagePicker), for: .touchUpInside)
         captureView?.addSubview(showImagePickerButton)
+        showImagePickerButton.widthAnchor.constraint(equalToConstant: 27).isActive = true
+        showImagePickerButton.heightAnchor.constraint(equalToConstant: 27).isActive = true
+        showImagePickerButton.centerXAnchor.constraint(equalTo: captureView!.trailingAnchor, constant: -40).isActive = true
+        showImagePickerButton.centerYAnchor.constraint(equalTo: shutterButton.centerYAnchor, constant: 0).isActive = true
         
         // cancel button
-        let cancelButton = UIButton(frame: CGRect(x:view.frame.origin.x + 20,
-                                                  y: view.frame.origin.y + 40,
-                                                           width: 32,
-                                                           height: 32))
-        cancelButton.setImage(UIImage.init(named: "cancel.png"), for: .normal)
-        cancelButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
-        captureView?.addSubview(cancelButton)
+        cancelButton = UIButton()
+        cancelButton?.translatesAutoresizingMaskIntoConstraints = false
+        cancelButton?.setImage(UIImage.init(named: "cancel.png"), for: .normal)
+        cancelButton?.addTarget(self, action: #selector(cancel), for: .touchUpInside)
+        cancelButton?.isHidden = withLibraryPicker
+        captureView?.addSubview(cancelButton!)
+        cancelButton?.widthAnchor.constraint(equalToConstant: 32).isActive = true
+        cancelButton?.heightAnchor.constraint(equalToConstant: 32).isActive = true
+        cancelButton?.trailingAnchor.constraint(equalTo: apertureView.trailingAnchor).isActive = true
+        cancelButton?.topAnchor.constraint(equalTo: apertureView.bottomAnchor).isActive = true
         
-        imageSelectedView = UIView.init(frame: (captureView?.frame)!)
-        imageSelectedView?.backgroundColor = UIColor.clear
-        imageSelectedView?.addSubview(capturedImageView!)
-        
-        let overlayView = UIView.init(frame: CGRect(x: 0,
-                                                    y: (previousFrame?.origin.y)! + (previousFrame?.height)!,
-                                                    width: (captureView?.frame.width)!,
-                                                    height: 60))
-        imageSelectedView?.addSubview(overlayView)
-        
-        let selectPhotoButton = UIButton(frame: CGRect(x:(previousFrame?.origin.x)!,
-                                                  y: 0,
-                                                  width: 32,
-                                                  height: 32))
-        selectPhotoButton.setImage(UIImage.init(named: "selected.png"), for: .normal)
-        selectPhotoButton.addTarget(self, action: #selector(photoSelected), for: .touchUpInside)
-        overlayView.addSubview(selectPhotoButton)
-        
-        let cancelSelectPhotoButton = UIButton(frame: CGRect(x:(previousFrame?.origin.x)! + (previousFrame?.width)! - 32,
-                                                       y: 0,
-                                                       width: 32,
-                                                       height: 32))
-        cancelSelectPhotoButton.setImage(UIImage.init(named: "cancel.png"), for: .normal)
-        cancelSelectPhotoButton.addTarget(self, action: #selector(cancelSelectedPhoto), for: .touchUpInside)
-        overlayView.addSubview(cancelSelectPhotoButton)
+        selectPhotoButton = UIButton()
+        selectPhotoButton?.translatesAutoresizingMaskIntoConstraints = false
+        selectPhotoButton?.setImage(UIImage.init(named: "selected.png"), for: .normal)
+        selectPhotoButton?.addTarget(self, action: #selector(photoSelected), for: .touchUpInside)
+        selectPhotoButton?.isHidden = true
+        captureView?.addSubview(selectPhotoButton!)
+        selectPhotoButton?.widthAnchor.constraint(equalToConstant: 32).isActive = true
+        selectPhotoButton?.heightAnchor.constraint(equalToConstant: 32).isActive = true
+        selectPhotoButton?.leadingAnchor.constraint(equalTo: apertureView.leadingAnchor).isActive = true
+        selectPhotoButton?.centerYAnchor.constraint(equalTo: cancelButton!.centerYAnchor).isActive = true
         
         captureSession?.startRunning()
-
+        
         UIApplication.shared.setStatusBarHidden(true, with: .slide)
     }
     
@@ -195,16 +213,6 @@ class AvatarCaptureController: UIViewController {
         for subview in (captureView?.subviews)! {
             subview.removeFromSuperview()
         }
-        avatarView = UIImageView.init(frame: CGRect(x: 0,
-                                                    y: 0,
-                                                    width: (previousFrame?.width)!,
-                                                    height: (previousFrame?.height)!))
-        avatarView?.image = image
-        avatarView?.contentMode = .scaleAspectFill
-        avatarView?.layer.masksToBounds = true
-        avatarView?.layer.cornerRadius = (avatarView?.frame.width)! / 2
-        view.addSubview(avatarView!)
-        view.layer.cornerRadius = view.frame.width / 2
         captureView?.removeFromSuperview()
         isCapturing = false
     }
@@ -261,18 +269,21 @@ class AvatarCaptureController: UIViewController {
         delegate?.imageSelected(image: image!)
     }
     
-    @objc func cancelSelectedPhoto() {
-        imageSelectedView?.removeFromSuperview()
-        for view in (captureView?.subviews)! {
-            if view.isKind(of: UIButton.self) {
-                view.isHidden = false
-            }
-        }
-    }
-    
     @objc func cancel() {
-        endCapture()
-        delegate?.imageSelectionCancelled()
+        if capturedImageView?.isHidden ?? true {
+            endCapture()
+            delegate?.imageSelectionCancelled()
+        }
+        else {
+            for view in (captureView?.subviews)! {
+                if let button = view as? UIButton {
+                    button.isHidden = false
+                }
+            }
+            captureView?.layer.addSublayer(captureVideoPreviewLayer!)
+            capturedImageView?.isHidden = true
+            selectPhotoButton?.isHidden = true
+        }
     }
 }
 
@@ -282,20 +293,29 @@ extension AvatarCaptureController: UINavigationControllerDelegate {
 
 extension AvatarCaptureController: UIImagePickerControllerDelegate {
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        if captureVideoPreviewLayer?.superlayer == nil {
+            captureView?.layer.addSublayer(captureVideoPreviewLayer!)
+            cancelButton?.isHidden = false
+        }
+        
         dismiss(animated: true, completion: nil)
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        selectedImage = info[UIImagePickerControllerOriginalImage] as? UIImage
+        self.selectedImage = info[UIImagePickerControllerOriginalImage] as? UIImage
         self.capturedImageView?.image = selectedImage
-        
         dismiss(animated: true, completion: {() -> Void in
             for view in (self.captureView?.subviews)! {
-                if view.isKind(of: UIButton.self) {
-                    view.isHidden = true
+                if let button = view as? UIButton {
+                    if button != self.cancelButton {
+                        button.isHidden = true
+                    }
                 }
             }
-            self.captureView?.addSubview(self.imageSelectedView!)
+            
+            self.captureVideoPreviewLayer?.removeFromSuperlayer()
+            self.capturedImageView?.isHidden = false
+            self.selectPhotoButton?.isHidden = false
         })
     }
 }
@@ -304,7 +324,7 @@ extension AvatarCaptureController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         var imageData = photo.fileDataRepresentation()
         let isFrontFacing = captureDevice == AVCaptureDevice.devices(for: .video)[1]
-
+        
         var capturedImage = UIImage.init(data: imageData!, scale:1)
         
         if isFrontFacing {
@@ -314,13 +334,19 @@ extension AvatarCaptureController: AVCapturePhotoCaptureDelegate {
         isCapturingImage = false
         capturedImageView?.image = capturedImage
         for view in (captureView?.subviews)! {
-            if view.isKind(of: UIButton.self) {
-                view.isHidden = true
+            if let button = view as? UIButton {
+                if button != self.cancelButton {
+                    button.isHidden = true
+                }
             }
         }
         
-        captureView?.addSubview(imageSelectedView!)
+        captureVideoPreviewLayer?.removeFromSuperlayer()
+        capturedImageView?.isHidden = false
+        selectPhotoButton?.isHidden = false
+        
         selectedImage = capturedImage
         imageData = nil
     }
 }
+
