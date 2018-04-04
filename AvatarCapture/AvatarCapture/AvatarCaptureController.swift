@@ -247,9 +247,9 @@ open class AvatarCaptureController: UIViewController {
         isCapturingImage = true
         
         let outputSettings = AVCapturePhotoSettings()
-        outputSettings.livePhotoVideoCodecType = .jpeg
         
         if let _ = stillImageOutput?.connection(with: .video){
+            stillImageOutput?.setPreparedPhotoSettingsArray([AVCapturePhotoSettings(format:[AVVideoCodecKey:AVVideoCodecJPEG])], completionHandler: nil)
             stillImageOutput?.capturePhoto(with: outputSettings, delegate: self)
         }
     }
@@ -307,27 +307,31 @@ extension AvatarCaptureController: UIImagePickerControllerDelegate {
 }
 
 extension AvatarCaptureController: AVCapturePhotoCaptureDelegate {
-    public func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        var imageData = photo.fileDataRepresentation()
-        let isFrontFacing = captureDevice == AVCaptureDevice.devices(for: .video)[1]
-        
-        var capturedImage = UIImage.init(data: imageData!, scale:1)
-        
-        if isFrontFacing {
-            capturedImage = UIImage.init(cgImage: (capturedImage?.cgImage!)!, scale: (capturedImage?.scale)!, orientation: UIImageOrientation.leftMirrored)
+    public func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photoSampleBuffer: CMSampleBuffer?, previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
+        if let error = error {
+            print(error.localizedDescription)
         }
         
-        isCapturingImage = false
-        capturedImageView?.image = capturedImage
-        for view in (captureView?.subviews)! {
-            if view.isKind(of: UIButton.self) {
-                view.isHidden = true
+        if let sampleBuffer = photoSampleBuffer, let dataImage = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: sampleBuffer, previewPhotoSampleBuffer: sampleBuffer) {
+            let isFrontFacing = captureDevice == AVCaptureDevice.devices(for: .video)[1]
+            
+            var capturedImage = UIImage.init(data: dataImage, scale:1)
+            
+            if isFrontFacing {
+                capturedImage = UIImage.init(cgImage: (capturedImage?.cgImage!)!, scale: (capturedImage?.scale)!, orientation: UIImageOrientation.leftMirrored)
             }
+            
+            isCapturingImage = false
+            capturedImageView?.image = capturedImage
+            for view in (captureView?.subviews)! {
+                if view.isKind(of: UIButton.self) {
+                    view.isHidden = true
+                }
+            }
+            
+            captureView?.addSubview(imageSelectedView!)
+            selectedImage = capturedImage
         }
-        
-        captureView?.addSubview(imageSelectedView!)
-        selectedImage = capturedImage
-        imageData = nil
     }
 }
 

@@ -1,35 +1,44 @@
 //
-//  MainViewViewController.swift
+//  MainViewController.swift
 //  AvatarCapture
 //
-//  Created by John Murphy on 4/4/18.
+//  Created by John Murphy on 3/28/18.
 //  Copyright © 2018 John Murphy. All rights reserved.
 //
 
 import UIKit
 
 class MainViewViewController: UIViewController {
-
+    @IBOutlet weak var avatarView: UIView!
+    
+    var avatarCaptureController = AvatarCaptureController()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
+        avatarCaptureController = AvatarCaptureController()
+        avatarCaptureController.delegate = self
+        avatarCaptureController.image = UIImage.init(named: "chin.png")
+        avatarView.addSubview((avatarCaptureController.view)!)
     }
-
+    
+    @IBAction func pressed(_ sender: Any) {
+        avatarCaptureController.startCapture()
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+}
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+extension MainViewViewController: AvatarCaptureControllerDelegate {
+    func imageSelected(image: UIImage) {
+        print("image Selected")
     }
-    */
-
+    
+    func imageSelectionCancelled() {
+        print("image selection cancelled")
+    }
 }
