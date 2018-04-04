@@ -1,16 +1,16 @@
 //
 //  AvatarCaptureController.swift
-//  Tourre
+//  AvatarCapture
 //
 //  Created by John Murphy on 3/28/18.
-//  Copyright © 2018 Eye-Fi. All rights reserved.
+//  Copyright © 2018 John Murphy. All rights reserved.
 //
 
 import UIKit
 import QuartzCore
 import AVFoundation
 
-protocol AvatarCaptureControllerDelegate: NSObjectProtocol {
+public protocol AvatarCaptureControllerDelegate: NSObjectProtocol {
     func imageSelected(image: UIImage)
     func imageSelectionCancelled()
 }
@@ -18,10 +18,10 @@ protocol AvatarCaptureControllerDelegate: NSObjectProtocol {
 open class AvatarCaptureController: UIViewController {
     @IBOutlet weak var apertureView: UIView!
     
-    var delegate: AvatarCaptureControllerDelegate?
+    public var delegate: AvatarCaptureControllerDelegate?
     var presentPickerImmediately = false
     
-    var image: UIImage?
+    public var image: UIImage?
     var isCapturing: Bool = false
     
     var captureView: UIView?
@@ -62,7 +62,7 @@ open class AvatarCaptureController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    @objc func startCapture(_ withLibraryPicker: Bool = false) {
+    @objc open func startCapture(_ withLibraryPicker: Bool = false) {
         if isCapturing {
             return
         }
@@ -206,7 +206,7 @@ open class AvatarCaptureController: UIViewController {
         UIApplication.shared.setStatusBarHidden(true, with: .slide)
     }
     
-    func endCapture() {
+    open func endCapture() {
         captureSession?.stopRunning()
         UIApplication.shared.setStatusBarHidden(false, with: .slide)
         captureVideoPreviewLayer?.removeFromSuperlayer()
@@ -217,7 +217,7 @@ open class AvatarCaptureController: UIViewController {
         isCapturing = false
     }
     
-    @objc func swapCameras() {
+    @objc open func swapCameras() {
         if isCapturingImage != true {
             if captureDevice == AVCaptureDevice.devices(for: .video)[0] {
                 // rear active, switch to front
@@ -256,7 +256,7 @@ open class AvatarCaptureController: UIViewController {
         }
     }
     
-    @objc func showImagePicker() {
+    @objc open func showImagePicker() {
         picker = UIImagePickerController()
         picker?.sourceType = .photoLibrary
         picker?.delegate = self
