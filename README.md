@@ -5,7 +5,7 @@ Writing a ground-up solution for taking profile pictures in iOS can be a pain an
 Note: AvatarCapture has a minimum deployment target of iOS 11
 
 Edit your PodFile:        
-`pod 'AvatarCapture', '1.0.4'`
+`pod 'AvatarCapture', '1.0.5'`
 
 Then run `pod install`
 
