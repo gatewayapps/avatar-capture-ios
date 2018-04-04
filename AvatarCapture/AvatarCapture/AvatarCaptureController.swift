@@ -32,6 +32,7 @@ open class AvatarCaptureController: UIViewController {
     var picker: UIImagePickerController?
     var imageSelectedView: UIView?
     var selectedImage: UIImage?
+    var resourceBundle: Bundle?
     
     override open func viewDidLoad() {
         super.viewDidLoad()
@@ -48,6 +49,10 @@ open class AvatarCaptureController: UIViewController {
         avatarView?.layer.masksToBounds = true
         avatarView?.layer.cornerRadius = view.bounds.width / 2
         view.addSubview(avatarView!)
+        
+        let frameworkBundle = Bundle(for: AvatarCaptureController.self)
+        let bundleUrl = frameworkBundle.resourceURL?.appendingPathComponent("AvatarCapture.bundle")
+        resourceBundle = Bundle(url: bundleUrl!)
     }
     
     override open func viewWillLayoutSubviews() {
@@ -122,8 +127,8 @@ open class AvatarCaptureController: UIViewController {
                                                            y: (view.window?.frame.height)! - 40 - 100,
                                                            width: 100,
                                                            height: 100))
-                                
-                shutterButton.setImage(UIImage(named: "take-snap.png", in:Bundle(for: self.classForCoder), compatibleWith: nil), for: .normal)
+                
+                shutterButton.setImage(UIImage(named: "shutter", in: resourceBundle, compatibleWith: nil), for: .normal)
                 shutterButton.addTarget(self, action: #selector(capturePhoto), for: .touchUpInside)
                 shutterButton.tintColor = UIColor.blue
                 shutterButton.layer.cornerRadius = 20
@@ -134,7 +139,7 @@ open class AvatarCaptureController: UIViewController {
                                                                y: (view.window?.frame.height)! - 40 - 25,
                                                                width: 47,
                                                                height: 25))
-                swapCamerasButton.setImage(UIImage.init(named: "front-camera.png"), for: .normal)
+                swapCamerasButton.setImage(UIImage(named: "front-camera", in: resourceBundle, compatibleWith: nil), for: .normal)
                 swapCamerasButton.addTarget(self, action: #selector(swapCameras), for: .touchUpInside)
                 captureView?.addSubview(swapCamerasButton)
             }
@@ -145,7 +150,7 @@ open class AvatarCaptureController: UIViewController {
                                                            y: (view.window?.frame.height)! - 40 - 27,
                                                            width: 27,
                                                            height: 27))
-        showImagePickerButton.setImage(UIImage.init(named: "library.png"), for: .normal)
+        showImagePickerButton.setImage(UIImage(named: "library", in: resourceBundle, compatibleWith: nil), for: .normal)
         showImagePickerButton.addTarget(self, action: #selector(showImagePicker), for: .touchUpInside)
         captureView?.addSubview(showImagePickerButton)
         
@@ -154,7 +159,7 @@ open class AvatarCaptureController: UIViewController {
                                                   y: view.frame.origin.y + 40,
                                                   width: 32,
                                                   height: 32))
-        cancelButton.setImage(UIImage.init(named: "cancel.png"), for: .normal)
+        cancelButton.setImage(UIImage(named: "close", in: resourceBundle, compatibleWith: nil), for: .normal)
         cancelButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
         captureView?.addSubview(cancelButton)
         
@@ -172,7 +177,7 @@ open class AvatarCaptureController: UIViewController {
                                                        y: 0,
                                                        width: 32,
                                                        height: 32))
-        selectPhotoButton.setImage(UIImage.init(named: "selected.png"), for: .normal)
+        selectPhotoButton.setImage(UIImage(named: "selected", in: resourceBundle, compatibleWith: nil), for: .normal)
         selectPhotoButton.addTarget(self, action: #selector(photoSelected), for: .touchUpInside)
         overlayView.addSubview(selectPhotoButton)
         
@@ -180,7 +185,7 @@ open class AvatarCaptureController: UIViewController {
                                                              y: 0,
                                                              width: 32,
                                                              height: 32))
-        cancelSelectPhotoButton.setImage(UIImage.init(named: "cancel.png"), for: .normal)
+        cancelSelectPhotoButton.setImage(UIImage(named: "close", in: resourceBundle, compatibleWith: nil), for: .normal)
         cancelSelectPhotoButton.addTarget(self, action: #selector(cancelSelectedPhoto), for: .touchUpInside)
         overlayView.addSubview(cancelSelectPhotoButton)
         
