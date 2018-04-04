@@ -15,6 +15,11 @@ Then run `pod install`
 - Swap cameras from front facing to rear and vice versa
 - Choose a photo from the iPhone library
 
+## Plans
+- allow more flexibility in where buttons are positioned
+- add custom elements/subviews
+- Change/choose shape of avatar profile
+
 ## Getting Started
 Getting started with AvatarCapture is super easy!
 
