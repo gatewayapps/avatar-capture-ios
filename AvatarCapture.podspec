@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name	= 'AvatarCapture'
-  s.version	= '1.0.4'
+  s.version	= '1.0.5'
   s.summary	= 'A Swift based drop in solution for taking avatar/profile pictures using the iOS Camera'
 
   s.description	= <<-DESC
