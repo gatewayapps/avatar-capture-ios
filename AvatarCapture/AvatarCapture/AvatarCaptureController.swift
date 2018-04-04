@@ -16,7 +16,7 @@ public protocol AvatarCaptureControllerDelegate: NSObjectProtocol {
 }
 
 open class AvatarCaptureController: UIViewController {
-    @IBOutlet weak var apertureView: UIView!
+    public var apertureView: UIView!
     
     public var delegate: AvatarCaptureControllerDelegate?
     var presentPickerImmediately = false
