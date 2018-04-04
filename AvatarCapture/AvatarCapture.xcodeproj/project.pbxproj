@@ -7,16 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		824392D0206D21BA003DE060 /* Example in Resources */ = {isa = PBXBuildFile; fileRef = 824392CF206D21BA003DE060 /* Example */; };
+		821BE7D42075766E001A7D7C /* MainViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821BE7D32075766E001A7D7C /* MainViewViewController.swift */; };
 		82680F39206C91C000A1277F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82680F38206C91C000A1277F /* AppDelegate.swift */; };
 		82680F3E206C91C000A1277F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82680F3C206C91C000A1277F /* Main.storyboard */; };
 		82680F40206C91C000A1277F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82680F3F206C91C000A1277F /* Assets.xcassets */; };
 		82680F43206C91C000A1277F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82680F41206C91C000A1277F /* LaunchScreen.storyboard */; };
 		82680F4B206C926900A1277F /* AvatarCaptureController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82680F4A206C926900A1277F /* AvatarCaptureController.swift */; };
+		8296C6FD207570BD00FEBEDB /* chin.png in Resources */ = {isa = PBXBuildFile; fileRef = 8296C6FB207570BD00FEBEDB /* chin.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		824392CF206D21BA003DE060 /* Example */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Example; sourceTree = "<group>"; };
+		821BE7D32075766E001A7D7C /* MainViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewViewController.swift; sourceTree = "<group>"; };
 		82680F35206C91C000A1277F /* AvatarCapture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AvatarCapture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82680F38206C91C000A1277F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		82680F3D206C91C000A1277F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -24,6 +25,7 @@
 		82680F42206C91C000A1277F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		82680F44206C91C000A1277F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		82680F4A206C926900A1277F /* AvatarCaptureController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AvatarCaptureController.swift; sourceTree = "<group>"; };
+		8296C6FB207570BD00FEBEDB /* chin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chin.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,15 +58,25 @@
 		82680F37206C91C000A1277F /* AvatarCapture */ = {
 			isa = PBXGroup;
 			children = (
-				824392CF206D21BA003DE060 /* Example */,
+				8296C6FA207570AE00FEBEDB /* Example */,
 				82680F4A206C926900A1277F /* AvatarCaptureController.swift */,
 				82680F38206C91C000A1277F /* AppDelegate.swift */,
 				82680F3C206C91C000A1277F /* Main.storyboard */,
 				82680F3F206C91C000A1277F /* Assets.xcassets */,
 				82680F41206C91C000A1277F /* LaunchScreen.storyboard */,
 				82680F44206C91C000A1277F /* Info.plist */,
+				821BE7D32075766E001A7D7C /* MainViewViewController.swift */,
 			);
 			path = AvatarCapture;
+			sourceTree = "<group>";
+		};
+		8296C6FA207570AE00FEBEDB /* Example */ = {
+			isa = PBXGroup;
+			children = (
+				8296C6FB207570BD00FEBEDB /* chin.png */,
+			);
+			name = Example;
+			path = "New Group";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -127,9 +139,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				82680F43206C91C000A1277F /* LaunchScreen.storyboard in Resources */,
+				8296C6FD207570BD00FEBEDB /* chin.png in Resources */,
 				82680F40206C91C000A1277F /* Assets.xcassets in Resources */,
 				82680F3E206C91C000A1277F /* Main.storyboard in Resources */,
-				824392D0206D21BA003DE060 /* Example in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,6 +153,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				82680F39206C91C000A1277F /* AppDelegate.swift in Sources */,
+				821BE7D42075766E001A7D7C /* MainViewViewController.swift in Sources */,
 				82680F4B206C926900A1277F /* AvatarCaptureController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
