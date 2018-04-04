@@ -1,11 +1,11 @@
-# avatar-capture-ios
-
 ## What is AvatarCapture?
 Writing a ground-up solution for taking profile pictures in iOS can be a pain and time consuming. AvatarCapture is a Swift based library inspired by [ZCSAvatarCapture](https://github.com/zshannon/ZCSAvatarCapture) whose purpose is to make it as easy as possible to start your camera(front facing or rear), allow you to snap a photo or choose a photo from your Photos library.
 
 ## Installation
+Note: AvatarCapture has a minimum deployment target of iOS 11
+
 Edit your PodFile:        
-`pod 'AvatarCapture', '1.0.0'`
+`pod 'AvatarCapture', '1.0.4'`
 
 Then run `pod install`
 
@@ -16,6 +16,7 @@ Then run `pod install`
 - Choose a photo from the iPhone library
 
 ## Plans
+- general code improvements
 - allow more flexibility in where buttons are positioned
 - add custom elements/subviews
 - Change/choose shape of avatar profile
