@@ -55,5 +55,9 @@ extension MyViewController: AvatarCaptureControllerDelegate {
 Don't I look excited...?    
 ![Capture](https://github.com/gatewayapps/avatar-capture-ios/blob/master/AvatarCapture/AvatarCapture/capture_me.gif)
 
+## Thanks
+**Berend Ozceri** - [@berendo](https://github.com/berendo) for thinking of doing this        
+[ZCSAvatarCapture](https://github.com/zshannon/ZCSAvatarCapture) for doing this first
+
 ## Feedback
 Please feel free to create issues if bugs are found or if enhancements or new features are desired
