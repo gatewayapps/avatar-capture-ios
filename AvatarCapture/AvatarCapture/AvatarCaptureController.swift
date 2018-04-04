@@ -15,7 +15,7 @@ protocol AvatarCaptureControllerDelegate: NSObjectProtocol {
     func imageSelectionCancelled()
 }
 
-class AvatarCaptureController: UIViewController {
+open class AvatarCaptureController: UIViewController {
     @IBOutlet weak var apertureView: UIView!
     
     var delegate: AvatarCaptureControllerDelegate?
@@ -36,13 +36,13 @@ class AvatarCaptureController: UIViewController {
     var cancelButton: UIButton?
     var selectPhotoButton: UIButton?
     
-    override func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    override open func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         if !isCapturing {
@@ -50,14 +50,14 @@ class AvatarCaptureController: UIViewController {
         }
     }
     
-    override func viewWillLayoutSubviews() {
+    override open func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         
         apertureView.layer.cornerRadius = apertureView.bounds.width / 2
         capturedImageView?.layer.cornerRadius = apertureView.bounds.width / 2
     }
     
-    override func didReceiveMemoryWarning() {
+    override open func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
@@ -292,7 +292,7 @@ extension AvatarCaptureController: UINavigationControllerDelegate {
 }
 
 extension AvatarCaptureController: UIImagePickerControllerDelegate {
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+    public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         if captureVideoPreviewLayer?.superlayer == nil {
             captureView?.layer.addSublayer(captureVideoPreviewLayer!)
             cancelButton?.isHidden = false
@@ -301,7 +301,7 @@ extension AvatarCaptureController: UIImagePickerControllerDelegate {
         dismiss(animated: true, completion: nil)
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         self.selectedImage = info[UIImagePickerControllerOriginalImage] as? UIImage
         self.capturedImageView?.image = selectedImage
         dismiss(animated: true, completion: {() -> Void in
@@ -321,7 +321,7 @@ extension AvatarCaptureController: UIImagePickerControllerDelegate {
 }
 
 extension AvatarCaptureController: AVCapturePhotoCaptureDelegate {
-    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+    public func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         var imageData = photo.fileDataRepresentation()
         let isFrontFacing = captureDevice == AVCaptureDevice.devices(for: .video)[1]
         
