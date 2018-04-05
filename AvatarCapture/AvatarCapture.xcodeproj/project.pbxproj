@@ -14,9 +14,12 @@
 		82680F43206C91C000A1277F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82680F41206C91C000A1277F /* LaunchScreen.storyboard */; };
 		82680F4B206C926900A1277F /* AvatarCaptureController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82680F4A206C926900A1277F /* AvatarCaptureController.swift */; };
 		8296C6FD207570BD00FEBEDB /* chin.png in Resources */ = {isa = PBXBuildFile; fileRef = 8296C6FB207570BD00FEBEDB /* chin.png */; };
+		E7078100C2107BE62B112237 /* Pods_AvatarCapture.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8C323117F2E7B629E48CDA4 /* Pods_AvatarCapture.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		26110AF74EF70126A1BCCADB /* Pods-AvatarCapture.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AvatarCapture.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AvatarCapture/Pods-AvatarCapture.debug.xcconfig"; sourceTree = "<group>"; };
+		7C6D0ECC02A771FE47E81BD3 /* Pods-AvatarCapture.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AvatarCapture.release.xcconfig"; path = "Pods/Target Support Files/Pods-AvatarCapture/Pods-AvatarCapture.release.xcconfig"; sourceTree = "<group>"; };
 		821BE7D32075766E001A7D7C /* MainViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewViewController.swift; sourceTree = "<group>"; };
 		82680F35206C91C000A1277F /* AvatarCapture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AvatarCapture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82680F38206C91C000A1277F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -26,6 +29,7 @@
 		82680F44206C91C000A1277F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		82680F4A206C926900A1277F /* AvatarCaptureController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AvatarCaptureController.swift; sourceTree = "<group>"; };
 		8296C6FB207570BD00FEBEDB /* chin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chin.png; sourceTree = "<group>"; };
+		B8C323117F2E7B629E48CDA4 /* Pods_AvatarCapture.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AvatarCapture.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E7078100C2107BE62B112237 /* Pods_AvatarCapture.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,6 +49,8 @@
 			children = (
 				82680F37206C91C000A1277F /* AvatarCapture */,
 				82680F36206C91C000A1277F /* Products */,
+				86F8BCAFE0FFE6ACB90A52DA /* Pods */,
+				C8E0329552C74A77E1092393 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -79,6 +86,23 @@
 			path = "New Group";
 			sourceTree = "<group>";
 		};
+		86F8BCAFE0FFE6ACB90A52DA /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				26110AF74EF70126A1BCCADB /* Pods-AvatarCapture.debug.xcconfig */,
+				7C6D0ECC02A771FE47E81BD3 /* Pods-AvatarCapture.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		C8E0329552C74A77E1092393 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B8C323117F2E7B629E48CDA4 /* Pods_AvatarCapture.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -86,9 +110,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 82680F47206C91C000A1277F /* Build configuration list for PBXNativeTarget "AvatarCapture" */;
 			buildPhases = (
+				5D8528E783586968397D5963 /* [CP] Check Pods Manifest.lock */,
 				82680F31206C91C000A1277F /* Sources */,
 				82680F32206C91C000A1277F /* Frameworks */,
 				82680F33206C91C000A1277F /* Resources */,
+				C38F4A179CE837B15CB31BA7 /* [CP] Embed Pods Frameworks */,
+				33A8AF73F3E6DB3906CDDB5C /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -146,6 +173,60 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		33A8AF73F3E6DB3906CDDB5C /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AvatarCapture/Pods-AvatarCapture-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5D8528E783586968397D5963 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-AvatarCapture-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C38F4A179CE837B15CB31BA7 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-AvatarCapture/Pods-AvatarCapture-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/FontAwesome.swift/FontAwesome_swift.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FontAwesome_swift.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AvatarCapture/Pods-AvatarCapture-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		82680F31206C91C000A1277F /* Sources */ = {
@@ -289,6 +370,7 @@
 		};
 		82680F48206C91C000A1277F /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 26110AF74EF70126A1BCCADB /* Pods-AvatarCapture.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -304,6 +386,7 @@
 		};
 		82680F49206C91C000A1277F /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7C6D0ECC02A771FE47E81BD3 /* Pods-AvatarCapture.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
