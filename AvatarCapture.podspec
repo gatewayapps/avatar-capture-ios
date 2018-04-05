@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name	= 'AvatarCapture'
-  s.version	= '1.0.5'
+  s.version	= '1.1.0'
   s.summary	= 'A Swift based drop in solution for taking avatar/profile pictures using the iOS Camera'
 
   s.description	= <<-DESC
@@ -10,6 +10,7 @@ Writing a ground-up solution for taking profile pictures in iOS can be a pain an
   s.homepage	= 'https://github.com/gatewayapps/avatar-capture-ios'
   s.license	= { :type => 'MIT', :file => 'LICENSE' }
   s.author	= { 'John Murphy' => 'john@gatewayapps.com' }
+  s.social_media_url = "https://twitter.com/johnmurphy01"
   s.source	= { :git => 'https://github.com/gatewayapps/avatar-capture-ios.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '10.0'

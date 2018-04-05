@@ -103,13 +103,9 @@ open class AvatarCaptureController: UIViewController {
         addOtherControls()
         
         captureSession?.startRunning()
-        
-        UIApplication.shared.setStatusBarHidden(true, with: .slide)
     }
     
     open func endCapture() {
-        UIApplication.shared.setStatusBarHidden(false, with: .slide)
-
         captureSession?.stopRunning()
 
         captureVideoPreviewLayer?.removeFromSuperlayer()
@@ -135,29 +131,31 @@ open class AvatarCaptureController: UIViewController {
     
     @objc open func swapCameras() {
         if isCapturingImage != true {
-            if captureDevice == AVCaptureDevice.devices(for: .video)[0] {
-                // rear active, switch to front
-                captureDevice = AVCaptureDevice.devices(for: .video)[1]
-                
-                captureSession?.beginConfiguration()
-                let newInput = try? AVCaptureDeviceInput (device: captureDevice!)
-                for oldInput in (captureSession?.inputs)! {
-                    captureSession?.removeInput(oldInput)
+            let deviceDiscoverySession = AVCaptureDevice.DiscoverySession.init(deviceTypes: [.builtInWideAngleCamera], mediaType: .video, position: .unspecified)
+            
+            if captureDevice?.position == AVCaptureDevice.Position.back {
+                for device in deviceDiscoverySession.devices {
+                    if device.position == .front {
+                        captureDevice = device
+                        break
+                    }
                 }
-                captureSession?.addInput(newInput!)
-                captureSession?.commitConfiguration()
-            } else if captureDevice == AVCaptureDevice.devices(for: .video)[1] {
-                // front active, switch to rear
-                captureDevice = AVCaptureDevice.devices(for: .video)[0]
-                
-                captureSession?.beginConfiguration()
-                let newInput = try? AVCaptureDeviceInput (device: captureDevice!)
-                for oldInput in (captureSession?.inputs)! {
-                    captureSession?.removeInput(oldInput)
+            } else if captureDevice?.position == AVCaptureDevice.Position.front {
+                for device in deviceDiscoverySession.devices {
+                    if device.position == .back {
+                        captureDevice = device
+                        break
+                    }
                 }
-                captureSession?.addInput(newInput!)
-                captureSession?.commitConfiguration()
             }
+            
+            captureSession?.beginConfiguration()
+            let newInput = try? AVCaptureDeviceInput (device: captureDevice!)
+            for oldInput in (captureSession?.inputs)! {
+                captureSession?.removeInput(oldInput)
+            }
+            captureSession?.addInput(newInput!)
+            captureSession?.commitConfiguration()
         }
     }
     
@@ -244,14 +242,12 @@ open class AvatarCaptureController: UIViewController {
     }
     
     func getCaptureDevice() -> AVCaptureDevice? {
-        let devices = AVCaptureDevice.devices(for: .video)
-        if devices.count > 0 {
-            captureDevice = devices[0]
-            for device in devices {
-                if device.position == .front {
-                    captureDevice = device
-                    return device
-                }
+        let deviceDiscoverySession = AVCaptureDevice.DiscoverySession.init(deviceTypes: [.builtInWideAngleCamera], mediaType: .video, position: .front)
+        
+        for device in deviceDiscoverySession.devices {
+            if device.position == .front {
+                captureDevice = device
+                return device
             }
         }
         
@@ -349,7 +345,7 @@ extension AvatarCaptureController: AVCapturePhotoCaptureDelegate {
         }
         
         if let sampleBuffer = photoSampleBuffer, let dataImage = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: sampleBuffer, previewPhotoSampleBuffer: sampleBuffer) {
-            let isFrontFacing = captureDevice == AVCaptureDevice.devices(for: .video)[1]
+            let isFrontFacing = captureDevice?.position == AVCaptureDevice.Position.front
             
             var capturedImage = UIImage.init(data: dataImage, scale:1)
             
