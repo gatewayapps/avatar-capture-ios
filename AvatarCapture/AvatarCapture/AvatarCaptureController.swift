@@ -9,6 +9,7 @@
 import UIKit
 import QuartzCore
 import AVFoundation
+import FontAwesome_swift
 
 public protocol AvatarCaptureControllerDelegate: NSObjectProtocol {
     func imageSelected(image: UIImage)
@@ -135,32 +136,47 @@ open class AvatarCaptureController: UIViewController {
                 captureView?.addSubview(shutterButton)
                 
                 // render swap camera
-                let swapCamerasButton = UIButton(frame: CGRect(x:view.frame.origin.x + 20,
-                                                               y: (view.window?.frame.height)! - 40 - 25,
-                                                               width: 47,
-                                                               height: 25))
-                swapCamerasButton.setImage(UIImage(named: "front-camera", in: resourceBundle, compatibleWith: nil), for: .normal)
-                swapCamerasButton.addTarget(self, action: #selector(swapCameras), for: .touchUpInside)
+                let swapCameraTap = UITapGestureRecognizer(target:self, action: #selector(swapCameras))
+                let swapCamerasButton = UILabel(frame: CGRect(x:view.frame.origin.x + 20,
+                                                              y: (view.window?.frame.height)! - 40 - 25,
+                                                              width: 47,
+                                                              height: 25))
+                
+                swapCamerasButton.font = UIFont.fontAwesome(ofSize: 25)
+                swapCamerasButton.text = String.fontAwesomeIcon(name: .refresh)
+                swapCamerasButton.textColor = UIColor.white
+                swapCamerasButton.isUserInteractionEnabled = true
+                swapCamerasButton.addGestureRecognizer(swapCameraTap)
                 captureView?.addSubview(swapCamerasButton)
             }
         }
         
         // library picker button
-        let showImagePickerButton = UIButton(frame: CGRect(x:(view.window?.frame.width)! - 40,
-                                                           y: (view.window?.frame.height)! - 40 - 27,
-                                                           width: 27,
-                                                           height: 27))
-        showImagePickerButton.setImage(UIImage(named: "library", in: resourceBundle, compatibleWith: nil), for: .normal)
-        showImagePickerButton.addTarget(self, action: #selector(showImagePicker), for: .touchUpInside)
+        let imagePickerTap = UITapGestureRecognizer(target:self, action: #selector(showImagePicker))
+        let showImagePickerButton = UILabel(frame: CGRect(x:(view.window?.frame.width)! - 40,
+                                                 y: (view.window?.frame.height)! - 40 - 27,
+                                                 width: 27,
+                                                 height: 27))
+        
+        showImagePickerButton.font = UIFont.fontAwesome(ofSize: 27)
+        showImagePickerButton.text = String.fontAwesomeIcon(name: .clone)
+        showImagePickerButton.textColor = UIColor.white
+        showImagePickerButton.isUserInteractionEnabled = true
+        showImagePickerButton.addGestureRecognizer(imagePickerTap)
         captureView?.addSubview(showImagePickerButton)
         
         // cancel button
-        let cancelButton = UIButton(frame: CGRect(x:view.frame.origin.x + 20,
-                                                  y: view.frame.origin.y + 40,
-                                                  width: 32,
-                                                  height: 32))
-        cancelButton.setImage(UIImage(named: "close", in: resourceBundle, compatibleWith: nil), for: .normal)
-        cancelButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
+        let cancelTap = UITapGestureRecognizer(target:self, action: #selector(cancel))
+        let cancelButton = UILabel(frame: CGRect(x:view.frame.origin.x + 20,
+                                                 y: view.frame.origin.y + 40,
+                                                 width: 32,
+                                                 height: 32))
+        
+        cancelButton.font = UIFont.fontAwesome(ofSize: 32)
+        cancelButton.text = String.fontAwesomeIcon(name: .close)
+        cancelButton.textColor = UIColor.white
+        cancelButton.isUserInteractionEnabled = true
+        cancelButton.addGestureRecognizer(cancelTap)
         captureView?.addSubview(cancelButton)
         
         imageSelectedView = UIView.init(frame: (captureView?.frame)!)
@@ -173,20 +189,29 @@ open class AvatarCaptureController: UIViewController {
                                                     height: 60))
         imageSelectedView?.addSubview(overlayView)
         
-        let selectPhotoButton = UIButton(frame: CGRect(x:(previousFrame?.origin.x)!,
-                                                       y: 0,
-                                                       width: 32,
-                                                       height: 32))
-        selectPhotoButton.setImage(UIImage(named: "selected", in: resourceBundle, compatibleWith: nil), for: .normal)
-        selectPhotoButton.addTarget(self, action: #selector(photoSelected), for: .touchUpInside)
+        let selectPhotoTap = UITapGestureRecognizer(target:self, action: #selector(photoSelected))
+        let selectPhotoButton = UILabel(frame: CGRect(x:(previousFrame?.origin.x)!,
+                                                      y: 0,
+                                                      width: 32,
+                                                      height: 32))
+        selectPhotoButton.font = UIFont.fontAwesome(ofSize: 32)
+        selectPhotoButton.text = String.fontAwesomeIcon(name: .check)
+        selectPhotoButton.textColor = UIColor.white
+        selectPhotoButton.isUserInteractionEnabled = true
+        selectPhotoButton.addGestureRecognizer(selectPhotoTap)
         overlayView.addSubview(selectPhotoButton)
         
-        let cancelSelectPhotoButton = UIButton(frame: CGRect(x:(previousFrame?.origin.x)! + (previousFrame?.width)! - 32,
-                                                             y: 0,
-                                                             width: 32,
-                                                             height: 32))
-        cancelSelectPhotoButton.setImage(UIImage(named: "close", in: resourceBundle, compatibleWith: nil), for: .normal)
-        cancelSelectPhotoButton.addTarget(self, action: #selector(cancelSelectedPhoto), for: .touchUpInside)
+        let cancelSelectedPhotoTap = UITapGestureRecognizer(target:self, action: #selector(cancelSelectedPhoto))
+        let cancelSelectPhotoButton = UILabel(frame: CGRect(x:(previousFrame?.origin.x)! + (previousFrame?.width)! - 32,
+                                                           y: 0,
+                                                           width: 32,
+                                                           height: 32))
+        
+        cancelSelectPhotoButton.font = UIFont.fontAwesome(ofSize: 32)
+        cancelSelectPhotoButton.text = String.fontAwesomeIcon(name: .close)
+        cancelSelectPhotoButton.textColor = UIColor.white
+        cancelSelectPhotoButton.isUserInteractionEnabled = true
+        cancelSelectPhotoButton.addGestureRecognizer(cancelSelectedPhotoTap)
         overlayView.addSubview(cancelSelectPhotoButton)
         
         captureSession?.startRunning()
