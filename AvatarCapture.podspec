@@ -17,6 +17,7 @@ Writing a ground-up solution for taking profile pictures in iOS can be a pain an
   s.resource_bundles = {
     'AvatarCapture' => ['AvatarCapture/*/Assets.xcassets']
   }
+  s.dependency 'FontAwesome.swift', '~> 1.3.0'
   s.source_files = 'AvatarCapture/AvatarCapture/AvatarCaptureController.swift' 
 
 end
