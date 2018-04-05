@@ -19,9 +19,9 @@ public protocol AvatarCaptureControllerDelegate: NSObjectProtocol {
 open class AvatarCaptureController: UIViewController {
     public var delegate: AvatarCaptureControllerDelegate?
     public var image: UIImage?
+    
     var previousFrame: CGRect?
     var isCapturing: Bool?
-    
     var avatarView: UIImageView?
     var captureView: UIView?
     var captureSession: AVCaptureSession?
@@ -35,6 +35,7 @@ open class AvatarCaptureController: UIViewController {
     var selectedImage: UIImage?
     var resourceBundle: Bundle?
     
+    // MARK: View Controller Overrides
     override open func viewDidLoad() {
         super.viewDidLoad()
         
@@ -43,6 +44,8 @@ open class AvatarCaptureController: UIViewController {
         
         let singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(startCapture))
         view.addGestureRecognizer(singleTapGestureRecognizer)
+        
+        // initialize the avatar view
         avatarView = UIImageView.init(frame: view.frame)
         avatarView?.image = image
         avatarView?.autoresizingMask = UIViewAutoresizing(rawValue: UIViewAutoresizing.RawValue(UInt8(UIViewAutoresizing.flexibleHeight.rawValue) | UInt8(UIViewAutoresizing.flexibleWidth.rawValue)))
@@ -51,6 +54,7 @@ open class AvatarCaptureController: UIViewController {
         avatarView?.layer.cornerRadius = view.bounds.width / 2
         view.addSubview(avatarView!)
         
+        // get the resource bundle
         let frameworkBundle = Bundle(for: AvatarCaptureController.self)
         let bundleUrl = frameworkBundle.resourceURL?.appendingPathComponent("AvatarCapture.bundle")
         resourceBundle = Bundle(url: bundleUrl!)
@@ -69,6 +73,7 @@ open class AvatarCaptureController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    // MARK: Exposed methods
     @objc open func startCapture() {
         if isCapturing! {
             return
@@ -80,42 +85,10 @@ open class AvatarCaptureController: UIViewController {
         }
         previousFrame = view.convert(view.frame, to: nil)
         
-        captureView = UIView(frame: (view.window?.frame)!)
-        view.window?.addSubview(captureView!)
+        initializeCaptureView()
         
-        let shadeView = UIView(frame: (captureView?.frame)!)
-        shadeView.alpha = 0.85
-        shadeView.backgroundColor = UIColor.black
-        captureView?.addSubview(shadeView)
-        
-        captureSession = AVCaptureSession()
-        captureSession?.sessionPreset = .photo
-        
-        capturedImageView = UIImageView()
-        capturedImageView?.frame = previousFrame!
-        capturedImageView?.layer.cornerRadius = (previousFrame?.width)! / 2
-        capturedImageView?.layer.masksToBounds = true
-        capturedImageView?.backgroundColor = UIColor.clear
-        capturedImageView?.isUserInteractionEnabled = true
-        capturedImageView?.contentMode = .scaleAspectFill
-        
-        captureVideoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
-        captureVideoPreviewLayer?.videoGravity = .resizeAspectFill
-        captureVideoPreviewLayer?.frame = previousFrame!
-        captureVideoPreviewLayer?.cornerRadius = (captureVideoPreviewLayer?.frame.width)! / 2
-        captureView?.layer.addSublayer(captureVideoPreviewLayer!)
-        
-        let devices = AVCaptureDevice.devices(for: .video)
-        if devices.count > 0 {
-            captureDevice = devices[0]
-            for device in devices {
-                if device.position == .front {
-                    captureDevice = device
-                    break
-                }
-            }
-            
-            let input = try? AVCaptureDeviceInput.init(device: captureDevice!)
+        if let device = getCaptureDevice() {
+            let input = try? AVCaptureDeviceInput.init(device: device)
             
             if let input = input {
                 captureSession?.addInput(input)
@@ -123,40 +96,86 @@ open class AvatarCaptureController: UIViewController {
                 stillImageOutput = AVCapturePhotoOutput()
                 captureSession?.addOutput(stillImageOutput!)
                 
-                // shutter button
-                let shutterButton = UIButton(frame: CGRect(x:(previousFrame?.origin.x)! + ((previousFrame?.width)! / 2)-50,
-                                                           y: (view.window?.frame.height)! - 40 - 100,
-                                                           width: 100,
-                                                           height: 100))
-                
-                shutterButton.setImage(UIImage(named: "shutter", in: resourceBundle, compatibleWith: nil), for: .normal)
-                shutterButton.addTarget(self, action: #selector(capturePhoto), for: .touchUpInside)
-                shutterButton.tintColor = UIColor.blue
-                shutterButton.layer.cornerRadius = 20
-                captureView?.addSubview(shutterButton)
-                
-                // render swap camera
-                let swapCameraTap = UITapGestureRecognizer(target:self, action: #selector(swapCameras))
-                let swapCamerasButton = UILabel(frame: CGRect(x:view.frame.origin.x + 20,
-                                                              y: (view.window?.frame.height)! - 40 - 25,
-                                                              width: 47,
-                                                              height: 25))
-                
-                swapCamerasButton.font = UIFont.fontAwesome(ofSize: 25)
-                swapCamerasButton.text = String.fontAwesomeIcon(name: .refresh)
-                swapCamerasButton.textColor = UIColor.white
-                swapCamerasButton.isUserInteractionEnabled = true
-                swapCamerasButton.addGestureRecognizer(swapCameraTap)
-                captureView?.addSubview(swapCamerasButton)
+                addCameraControls()
             }
         }
         
+        addOtherControls()
+        
+        captureSession?.startRunning()
+        
+        UIApplication.shared.setStatusBarHidden(true, with: .slide)
+    }
+    
+    open func endCapture() {
+        UIApplication.shared.setStatusBarHidden(false, with: .slide)
+
+        captureSession?.stopRunning()
+
+        captureVideoPreviewLayer?.removeFromSuperlayer()
+        for subview in (captureView?.subviews)! {
+            subview.removeFromSuperview()
+        }
+        
+        avatarView = UIImageView.init(frame: CGRect(x: 0,
+                                                    y: 0,
+                                                    width: (previousFrame?.width)!,
+                                                    height: (previousFrame?.height)!))
+        avatarView?.image = image
+        avatarView?.contentMode = .scaleAspectFill
+        avatarView?.layer.masksToBounds = true
+        avatarView?.layer.cornerRadius = (avatarView?.frame.width)! / 2
+        
+        view.addSubview(avatarView!)
+        view.layer.cornerRadius = view.frame.width / 2
+        
+        captureView?.removeFromSuperview()
+        isCapturing = false
+    }
+    
+    @objc open func swapCameras() {
+        if isCapturingImage != true {
+            if captureDevice == AVCaptureDevice.devices(for: .video)[0] {
+                // rear active, switch to front
+                captureDevice = AVCaptureDevice.devices(for: .video)[1]
+                
+                captureSession?.beginConfiguration()
+                let newInput = try? AVCaptureDeviceInput (device: captureDevice!)
+                for oldInput in (captureSession?.inputs)! {
+                    captureSession?.removeInput(oldInput)
+                }
+                captureSession?.addInput(newInput!)
+                captureSession?.commitConfiguration()
+            } else if captureDevice == AVCaptureDevice.devices(for: .video)[1] {
+                // front active, switch to rear
+                captureDevice = AVCaptureDevice.devices(for: .video)[0]
+                
+                captureSession?.beginConfiguration()
+                let newInput = try? AVCaptureDeviceInput (device: captureDevice!)
+                for oldInput in (captureSession?.inputs)! {
+                    captureSession?.removeInput(oldInput)
+                }
+                captureSession?.addInput(newInput!)
+                captureSession?.commitConfiguration()
+            }
+        }
+    }
+    
+    @objc open func showImagePicker() {
+        picker = UIImagePickerController()
+        picker?.sourceType = .photoLibrary
+        picker?.delegate = self
+        present(picker!, animated: true, completion: nil)
+    }
+    
+    // MARK: Private methods
+    func addOtherControls() {
         // library picker button
         let imagePickerTap = UITapGestureRecognizer(target:self, action: #selector(showImagePicker))
         let showImagePickerButton = UILabel(frame: CGRect(x:(view.window?.frame.width)! - 40,
-                                                 y: (view.window?.frame.height)! - 40 - 27,
-                                                 width: 27,
-                                                 height: 27))
+                                                          y: (view.window?.frame.height)! - 40 - 27,
+                                                          width: 27,
+                                                          height: 27))
         
         showImagePickerButton.font = UIFont.fontAwesome(ofSize: 27)
         showImagePickerButton.text = String.fontAwesomeIcon(name: .clone)
@@ -203,9 +222,9 @@ open class AvatarCaptureController: UIViewController {
         
         let cancelSelectedPhotoTap = UITapGestureRecognizer(target:self, action: #selector(cancelSelectedPhoto))
         let cancelSelectPhotoButton = UILabel(frame: CGRect(x:(previousFrame?.origin.x)! + (previousFrame?.width)! - 32,
-                                                           y: 0,
-                                                           width: 32,
-                                                           height: 32))
+                                                            y: 0,
+                                                            width: 32,
+                                                            height: 32))
         
         cancelSelectPhotoButton.font = UIFont.fontAwesome(ofSize: 32)
         cancelSelectPhotoButton.text = String.fontAwesomeIcon(name: .close)
@@ -213,59 +232,76 @@ open class AvatarCaptureController: UIViewController {
         cancelSelectPhotoButton.isUserInteractionEnabled = true
         cancelSelectPhotoButton.addGestureRecognizer(cancelSelectedPhotoTap)
         overlayView.addSubview(cancelSelectPhotoButton)
-        
-        captureSession?.startRunning()
-        
-        UIApplication.shared.setStatusBarHidden(true, with: .slide)
     }
     
-    open func endCapture() {
-        captureSession?.stopRunning()
-        UIApplication.shared.setStatusBarHidden(false, with: .slide)
-        captureVideoPreviewLayer?.removeFromSuperlayer()
-        for subview in (captureView?.subviews)! {
-            subview.removeFromSuperview()
-        }
-        avatarView = UIImageView.init(frame: CGRect(x: 0,
-                                                    y: 0,
-                                                    width: (previousFrame?.width)!,
-                                                    height: (previousFrame?.height)!))
-        avatarView?.image = image
-        avatarView?.contentMode = .scaleAspectFill
-        avatarView?.layer.masksToBounds = true
-        avatarView?.layer.cornerRadius = (avatarView?.frame.width)! / 2
-        view.addSubview(avatarView!)
-        view.layer.cornerRadius = view.frame.width / 2
-        captureView?.removeFromSuperview()
-        isCapturing = false
+    func addCameraControls() {
+        // shutter button
+        let shutterButton = UIButton(frame: CGRect(x:(previousFrame?.origin.x)! + ((previousFrame?.width)! / 2)-50,
+                                                   y: (view.window?.frame.height)! - 40 - 100,
+                                                   width: 100,
+                                                   height: 100))
+        
+        shutterButton.setImage(UIImage(named: "shutter", in: resourceBundle, compatibleWith: nil), for: .normal)
+        shutterButton.addTarget(self, action: #selector(capturePhoto), for: .touchUpInside)
+        shutterButton.tintColor = UIColor.blue
+        shutterButton.layer.cornerRadius = 20
+        captureView?.addSubview(shutterButton)
+        
+        // render swap camera
+        let swapCameraTap = UITapGestureRecognizer(target:self, action: #selector(swapCameras))
+        let swapCamerasButton = UILabel(frame: CGRect(x:view.frame.origin.x + 20,
+                                                      y: (view.window?.frame.height)! - 40 - 25,
+                                                      width: 47,
+                                                      height: 25))
+        
+        swapCamerasButton.font = UIFont.fontAwesome(ofSize: 25)
+        swapCamerasButton.text = String.fontAwesomeIcon(name: .refresh)
+        swapCamerasButton.textColor = UIColor.white
+        swapCamerasButton.isUserInteractionEnabled = true
+        swapCamerasButton.addGestureRecognizer(swapCameraTap)
+        captureView?.addSubview(swapCamerasButton)
     }
     
-    @objc open func swapCameras() {
-        if isCapturingImage != true {
-            if captureDevice == AVCaptureDevice.devices(for: .video)[0] {
-                // rear active, switch to front
-                captureDevice = AVCaptureDevice.devices(for: .video)[1]
-                
-                captureSession?.beginConfiguration()
-                let newInput = try? AVCaptureDeviceInput (device: captureDevice!)
-                for oldInput in (captureSession?.inputs)! {
-                    captureSession?.removeInput(oldInput)
+    func getCaptureDevice() -> AVCaptureDevice? {
+        let devices = AVCaptureDevice.devices(for: .video)
+        if devices.count > 0 {
+            captureDevice = devices[0]
+            for device in devices {
+                if device.position == .front {
+                    captureDevice = device
+                    return device
                 }
-                captureSession?.addInput(newInput!)
-                captureSession?.commitConfiguration()
-            } else if captureDevice == AVCaptureDevice.devices(for: .video)[1] {
-                // front active, switch to rear
-                captureDevice = AVCaptureDevice.devices(for: .video)[0]
-                
-                captureSession?.beginConfiguration()
-                let newInput = try? AVCaptureDeviceInput (device: captureDevice!)
-                for oldInput in (captureSession?.inputs)! {
-                    captureSession?.removeInput(oldInput)
-                }
-                captureSession?.addInput(newInput!)
-                captureSession?.commitConfiguration()
             }
         }
+        
+        return nil
+    }
+    
+    func initializeCaptureView() {
+        captureView = UIView(frame: (view.window?.frame)!)
+        view.window?.addSubview(captureView!)
+        
+        let shadeView = UIView(frame: (captureView?.frame)!)
+        shadeView.alpha = 0.85
+        shadeView.backgroundColor = UIColor.black
+        captureView?.addSubview(shadeView)
+        
+        captureSession = AVCaptureSession()
+        captureSession?.sessionPreset = .photo
+        
+        capturedImageView = UIImageView()
+        capturedImageView?.frame = previousFrame!
+        capturedImageView?.layer.cornerRadius = (previousFrame?.width)! / 2
+        capturedImageView?.layer.masksToBounds = true
+        capturedImageView?.backgroundColor = UIColor.clear
+        capturedImageView?.isUserInteractionEnabled = true
+        capturedImageView?.contentMode = .scaleAspectFill
+        
+        captureVideoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
+        captureVideoPreviewLayer?.videoGravity = .resizeAspectFill
+        captureVideoPreviewLayer?.frame = previousFrame!
+        captureVideoPreviewLayer?.cornerRadius = (captureVideoPreviewLayer?.frame.width)! / 2
+        captureView?.layer.addSublayer(captureVideoPreviewLayer!)
     }
     
     @objc func capturePhoto() {
@@ -277,13 +313,6 @@ open class AvatarCaptureController: UIViewController {
             stillImageOutput?.setPreparedPhotoSettingsArray([AVCapturePhotoSettings(format:[AVVideoCodecKey:AVVideoCodecJPEG])], completionHandler: nil)
             stillImageOutput?.capturePhoto(with: outputSettings, delegate: self)
         }
-    }
-    
-    @objc open func showImagePicker() {
-        picker = UIImagePickerController()
-        picker?.sourceType = .photoLibrary
-        picker?.delegate = self
-        present(picker!, animated: true, completion: nil)
     }
     
     @objc func photoSelected() {
@@ -307,6 +336,7 @@ open class AvatarCaptureController: UIViewController {
     }
 }
 
+// MARK: Delegates
 extension AvatarCaptureController: UINavigationControllerDelegate {
     
 }
